@@ -50,7 +50,7 @@ User → [Browser] → AES-256-GCM Encrypt → Shelby RPC → Storage Providers 
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/blobsafe.git
+git clone https://github.com/0xPevita/blobsafe.git
 cd blobsafe
 
 # Install dependencies
