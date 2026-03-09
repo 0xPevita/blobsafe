@@ -135,7 +135,7 @@ export default function Home() {
           </p>
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com/Fanreza14/blobsafe"
+              href="https://github.com/0xPevita/blobsafe"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs font-mono text-frost-muted hover:text-frost transition-colors"
