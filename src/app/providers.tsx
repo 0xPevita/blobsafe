@@ -17,9 +17,9 @@ export function Providers({ children }: PropsWithChildren) {
       <AptosWalletAdapterProvider
         autoConnect
         dappConfig={{
-          network: Network.TESTNET,
-          aptosApiKeys: {
-            testnet: process.env.NEXT_PUBLIC_APTOS_API_KEY,
+          network: Network.SHELBYNET,
+          aptosApiKeys: { 
+            shelbynet: process.env.NEXT_PUBLIC_APTOS_API_KEY },
           },
         }}
       >
