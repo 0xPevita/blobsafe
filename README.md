@@ -2,7 +2,7 @@
 
 > **Decentralized encrypted file storage built natively on the Shelby Protocol.**
 
-BlobSafe is a privacy-first file storage platform that combines client-side AES-256-GCM encryption with on-chain access control via Aptos smart contracts. Your files are encrypted before they leave your device — zero knowledge on our end.
+BlobSafe is a privacy-first file storage platform that combines client-side AES-256-GCM encryption with on-chain access control via Aptos smart contracts. Your files are encrypted before they leave your device zero knowledge on our end.
 
 [![Built on Shelby](https://img.shields.io/badge/Built%20on-Shelby%20Protocol-c6ff00?style=flat-square&labelColor=0a0a0f)](https://shelby.xyz)
 [![Aptos](https://img.shields.io/badge/Chain-Aptos-blue?style=flat-square)](https://aptoslabs.com)
@@ -12,13 +12,13 @@ BlobSafe is a privacy-first file storage platform that combines client-side AES-
 
 ## ✨ Features
 
-- **🔐 Client-side AES-256-GCM encryption** — Files are encrypted locally using keys derived from your Aptos wallet. We never see your plaintext data.
-- **⛓️ On-chain access control** — File permissions are enforced by Aptos smart contracts, not by our servers.
-- **📦 Native Shelby SDK integration** — Uses `@shelby-protocol/react` and `@shelby-protocol/sdk/browser` directly.
-- **🪣 S3-compatible** — Works with the Shelby S3 Gateway for use with existing tools (AWS CLI, rclone, boto3, DuckDB).
-- **📋 Verifiable storage receipts** — Every upload produces a SHA-256 hash for integrity verification.
-- **🗂️ Virtual folder structure** — Organized blob naming system that mirrors a familiar folder UX.
-- **🌑 Beautiful dark UI** — Industrial-minimal design, no compromise.
+- **🔐 Client-side AES-256-GCM encryption** - Files are encrypted locally using keys derived from your Aptos wallet. We never see your plaintext data.
+- **⛓️ On-chain access control** - File permissions are enforced by Aptos smart contracts, not by our servers.
+- **📦 Native Shelby SDK integration** - Uses `@shelby-protocol/react` and `@shelby-protocol/sdk/browser` directly.
+- **🪣 S3-compatible** - Works with the Shelby S3 Gateway for use with existing tools (AWS CLI, rclone, boto3, DuckDB).
+- **📋 Verifiable storage receipts** - Every upload produces a SHA-256 hash for integrity verification.
+- **🗂️ Virtual folder structure** - Organized blob naming system that mirrors a familiar folder UX.
+- **🌑 Beautiful dark UI** - Industrial-minimal design, no compromise.
 
 ---
 
@@ -32,8 +32,8 @@ User → [Browser] → AES-256-GCM Encrypt → Shelby RPC → Storage Providers 
 ```
 
 - **Encryption**: Web Crypto API, AES-256-GCM, key derived via PBKDF2 from Aptos address
-- **Storage**: Shelby Protocol — erasure-coded across 16 storage providers via Clay Codes
-- **Coordination**: Aptos L1 — blob metadata, micropayment channels, audit proofs
+- **Storage**: Shelby Protocol - erasure-coded across 16 storage providers via Clay Codes
+- **Coordination**: Aptos L1 - blob metadata, micropayment channels, audit proofs
 - **Network**: DoubleZero private fiber between RPC servers and Storage Providers
 
 ---
@@ -68,8 +68,8 @@ Open [http://localhost:3000](http://localhost:3000) and connect your Petra walle
 
 ### Getting Testnet Tokens
 
-1. **APT tokens** — Use the Aptos faucet via the SDK or [faucet.testnet.aptoslabs.com](https://faucet.testnet.aptoslabs.com)
-2. **ShelbyUSD tokens** — Available from the Shelby faucet in the upload UI
+1. **APT tokens** - Use the Aptos faucet via the SDK or [faucet.testnet.aptoslabs.com](https://faucet.testnet.aptoslabs.com)
+2. **ShelbyUSD tokens** - Available from the Shelby faucet in the upload UI
 
 ---
 
@@ -132,11 +132,11 @@ The IV is randomly generated per file and prepended to the encrypted blob. Decry
 
 BlobSafe leverages these Shelby features:
 
-- **`ShelbyClient.upload()`** — Erasure-codes and distributes blobs across 16 storage providers
-- **`useAccountBlobs()`** — React hook for querying all blobs owned by an Aptos address
-- **Blob naming** — Virtual folders via path-like names (`blobsafe/encrypted/filename.pdf`)
-- **Micropayment channels** — Per-read payments without on-chain overhead per transaction
-- **S3 Gateway** — Point any S3-compatible tool at `http://localhost:9000` to interact with your blobs
+- **`ShelbyClient.upload()`** - Erasure-codes and distributes blobs across 16 storage providers
+- **`useAccountBlobs()`** - React hook for querying all blobs owned by an Aptos address
+- **Blob naming** - Virtual folders via path-like names (`blobsafe/encrypted/filename.pdf`)
+- **Micropayment channels** - Per-read payments without on-chain overhead per transaction
+- **S3 Gateway** - Point any S3-compatible tool at `http://localhost:9000` to interact with your blobs
 
 ---
 
@@ -154,16 +154,16 @@ Contributions are welcome! This project is intended as a reference implementatio
 
 ## 📄 License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- [Shelby Protocol](https://shelby.xyz) — Decentralized blob storage
-- [Aptos Labs](https://aptoslabs.com) — L1 blockchain infrastructure
-- [Jump Trading Group](https://jumpcrypto.com) — Shelby engineering foundation
+- [Shelby Protocol](https://shelby.xyz) - Decentralized blob storage
+- [Aptos Labs](https://aptoslabs.com) - L1 blockchain infrastructure
+- [Jump Trading Group](https://jumpcrypto.com) - Shelby engineering foundation
 
 ---
 
-*Built with ❤️ on the Shelby testnet. Not production-ready — use at your own risk.*
+*Built with ❤️ on the Shelby testnet. Not production-ready use at your own risk.*
