@@ -44,7 +44,7 @@ User → [Browser] → AES-256-GCM Encrypt → Shelby RPC → Storage Providers 
 
 - Node.js 18+
 - [Petra Wallet](https://petra.app) browser extension
-- Aptos API key from [Aptos Labs](https://developers.aptoslabs.com)
+- API key from geomi.dev (https://geomi.dev)
 
 ### Installation
 
@@ -68,8 +68,8 @@ Open [http://localhost:3000](http://localhost:3000) and connect your Petra walle
 
 ### Getting Testnet Tokens
 
-1. **APT tokens** - Use the Aptos faucet via the SDK or [faucet.testnet.aptoslabs.com](https://faucet.testnet.aptoslabs.com)
-2. **ShelbyUSD tokens** - Available from the Shelby faucet in the upload UI
+1. **APT tokens** - Use the [Shelby APT Faucet](https://docs.shelby.xyz/apis/faucet/aptos)
+2. **ShelbyUSD tokens** - Use the [Shelby ShelbyUSD Faucet](https://docs.shelby.xyz/apis/faucet/shelbyusd)
 
 ---
 
