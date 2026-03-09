@@ -16,7 +16,7 @@ export function FileList() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const shelbyClient = new ShelbyClient({
-    network: Network.TESTNET,
+    network: Network.SHELBYNET,
     apiKey: process.env.NEXT_PUBLIC_APTOS_API_KEY,
   });
 
