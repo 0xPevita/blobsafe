@@ -1,7 +1,7 @@
 import { Network } from "@aptos-labs/ts-sdk";
 
 // Shelby network config
-export const SHELBY_NETWORK = Network.TESTNET;
+export const SHELBY_NETWORK = Network.SHELBYNET;
 
 // Default expiration: 30 days from now (in microseconds)
 export const getDefaultExpiration = () =>
