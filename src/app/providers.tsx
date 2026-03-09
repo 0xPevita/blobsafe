@@ -18,8 +18,8 @@ export function Providers({ children }: PropsWithChildren) {
         autoConnect
         dappConfig={{
           network: Network.SHELBYNET,
-          aptosApiKeys: { 
-            shelbynet: process.env.NEXT_PUBLIC_APTOS_API_KEY },
+          aptosApiKeys: {
+            shelbynet: process.env.NEXT_PUBLIC_APTOS_API_KEY,
           },
         }}
       >
