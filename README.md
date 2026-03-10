@@ -44,8 +44,7 @@ User → [Browser] → AES-256-GCM Encrypt → Shelby RPC → Storage Providers 
 
 - Node.js 18+
 - [Petra Wallet](https://petra.app) browser extension
-- API key from geomi.dev (https://geomi.dev)
-
+- API key from [geomi.dev](https://geomi.dev)
 ### Installation
 
 ```bash
