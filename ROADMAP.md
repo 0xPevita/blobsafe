@@ -4,7 +4,7 @@
 
 ---
 
-## ✅ Phase 1 - Foundation (Current)
+## Phase 1 - Foundation (Current)
 
 - [x] Project scaffolding with Next.js 14
 - [x] Shelby Protocol SDK integration
@@ -18,7 +18,7 @@
 
 ---
 
-## 🔨 Phase 2 - Core Features (Next)
+## Phase 2 - Core Features (Next)
 
 - [ ] File download with client-side decryption
 - [ ] File preview (images, PDFs, text)
@@ -29,7 +29,7 @@
 
 ---
 
-## 🌐 Phase 3 - Team & Access Control
+## Phase 3 - Team & Access Control
 
 - [ ] Multi-user workspace support
 - [ ] On-chain access control via Aptos Move contract
@@ -40,7 +40,7 @@
 
 ---
 
-## 🚀 Phase 4 - Power Features
+## Phase 4 - Power Features
 
 - [ ] Full S3 Gateway UI (bucket browser)
 - [ ] DuckDB integration query Parquet files directly
@@ -51,7 +51,7 @@
 
 ---
 
-## 🏁 Phase 5 - Mainnet Launch
+## Phase 5 - Mainnet Launch
 
 - [ ] Security audit of encryption module
 - [ ] Mainnet deployment on Shelby
