@@ -1,5 +1,4 @@
 "use client";
-
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
 import { Network } from "@aptos-labs/ts-sdk";
@@ -11,13 +10,17 @@ const queryClient = new QueryClient({
   },
 });
 
+// Network.SHELBYNET may not exist in the published npm package,
+// so we fall back to a string literal to avoid undefined crashing the provider
+const SHELBY_NETWORK = (Network.SHELBYNET ?? "shelbynet") as Network;
+
 export function Providers({ children }: PropsWithChildren) {
   return (
     <QueryClientProvider client={queryClient}>
       <AptosWalletAdapterProvider
         autoConnect
         dappConfig={{
-          network: Network.SHELBYNET,
+          network: SHELBY_NETWORK,
           aptosApiKeys: {
             shelbynet: process.env.NEXT_PUBLIC_APTOS_API_KEY,
           },
