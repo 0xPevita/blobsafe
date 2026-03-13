@@ -39,13 +39,12 @@ export function FileList() {
     );
   }
 
-  const encryptedBlobs = blobs?.filter((b) => b.blobName?.includes("encrypted/")) || [];
-  const publicBlobs = blobs?.filter((b) => b.blobName?.includes("public/")) || [];
-  const allBlobs = blobs || [];
+  const encryptedBlobs = blobs?.filter((b) => (b as any).blobName?.includes("encrypted/")) || [];
+  const publicBlobs   = blobs?.filter((b) => (b as any).blobName?.includes("public/")) || [];
+  const allBlobs      = blobs || [];
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="font-display font-semibold text-frost">Your Files</h2>
@@ -110,54 +109,63 @@ function BlobSection({
         <span className="text-xs font-mono text-frost-muted uppercase tracking-widest">{title}</span>
         <span className="text-xs font-mono text-frost-muted/50">({blobs.length})</span>
       </div>
-
       <div className="rounded-xl border border-obsidian-600 overflow-hidden bg-obsidian-900">
         {blobs.map((blob, idx) => (
-          <BlobRow key={idx} blob={blob} badge={badge} badgeColor={badgeColor} isLast={idx === blobs.length - 1} />
+          <BlobRow
+            key={idx}
+            blob={blob}
+            badge={badge}
+            badgeColor={badgeColor}
+            isLast={idx === blobs.length - 1}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function BlobRow({ blob, badge, badgeColor, isLast }: { blob: any; badge: string; badgeColor: string; isLast: boolean }) {
-  const name = formatBlobName(blob.blobName || "");
+function BlobRow({
+  blob, badge, badgeColor, isLast,
+}: {
+  blob: any;
+  badge: string;
+  badgeColor: string;
+  isLast: boolean;
+}) {
+  const name     = formatBlobName((blob as any).blobName || "");
   const fileType = getFileType(name);
 
   return (
     <div className={`flex items-center gap-3 px-4 py-3 hover:bg-obsidian-800 transition-colors group ${!isLast ? "border-b border-obsidian-700" : ""}`}>
-      {/* Type badge */}
       <div className="w-9 h-9 rounded-lg bg-obsidian-800 border border-obsidian-600 flex items-center justify-center flex-shrink-0 group-hover:border-obsidian-500">
         <span className="text-[9px] font-mono font-bold text-frost-muted tracking-wider">{fileType}</span>
       </div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-mono text-frost truncate">{name}</p>
         <div className="flex items-center gap-2 mt-0.5">
           <span className={`text-[10px] font-mono ${badgeColor} opacity-70`}>{badge}</span>
-          {blob.size && (
+          {(blob as any).size && (
             <>
               <span className="text-frost-muted/30">·</span>
-              <span className="text-xs text-frost-muted">{formatBytes(blob.size)}</span>
+              <span className="text-xs text-frost-muted">{formatBytes((blob as any).size)}</span>
             </>
           )}
-          {blob.expirationMicros && (
+          {(blob as any).expirationMicros && (
             <>
               <span className="text-frost-muted/30">·</span>
               <span className="flex items-center gap-1 text-xs text-frost-muted">
                 <Clock size={10} />
-                {formatDate(blob.expirationMicros)}
+                {formatDate((blob as any).expirationMicros)}
               </span>
             </>
           )}
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
         <a
-          href={`https://explorer.shelby.xyz/testnet/blob/${blob.blobName}`}
+          href={`https://explorer.shelby.xyz/testnet/blob/${(blob as any).blobName}`}
           target="_blank"
           rel="noopener noreferrer"
           className="p-1.5 rounded-md hover:bg-obsidian-700 text-frost-muted hover:text-frost transition-colors"
@@ -166,7 +174,7 @@ function BlobRow({ blob, badge, badgeColor, isLast }: { blob: any; badge: string
           <ExternalLink size={13} />
         </a>
         <a
-          href={`https://api.shelbynet.shelby.xyz/shelby/v1/blobs/${blob.blobName}`}
+          href={`https://api.shelbynet.shelby.xyz/shelby/v1/blobs/${(blob as any).blobName}`}
           target="_blank"
           rel="noopener noreferrer"
           className="p-1.5 rounded-md hover:bg-obsidian-700 text-frost-muted hover:text-frost transition-colors"
