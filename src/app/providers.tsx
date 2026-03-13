@@ -10,8 +10,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Network.SHELBYNET may not exist in the published npm package,
-// so we fall back to a string literal to avoid undefined crashing the provider
 const SHELBY_NETWORK = (Network.SHELBYNET ?? "shelbynet") as Network;
 
 export function Providers({ children }: PropsWithChildren) {
