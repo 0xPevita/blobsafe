@@ -95,7 +95,7 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
           : `blobsafe/public/${uploadFile.file.name}`;
 
         await shelbyClient.upload({
-          account: account as any,
+          signer: account as any,
           blobData,
           blobName,
           expirationMicros: getDefaultExpiration(),
