@@ -80,7 +80,7 @@ export function FileUpload({ onUploadComplete }: FileUploadProps) {
 
         if (encrypt && encKey) {
           const { encrypted, iv } = await encryptData(blobData, encKey);
-          blobData = packEncrypted(encrypted, iv);
+          blobData = packEncrypted(encrypted, iv) as Uint8Array<ArrayBuffer>; // fix: cast to Uint8Array<ArrayBuffer>
         }
 
         // Step 3: Upload
