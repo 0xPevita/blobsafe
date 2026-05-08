@@ -7,6 +7,8 @@ Repository: https://github.com/0xPevita/blobsafe
 
 BlobSafe combines Shelby storage, Aptos wallet signatures, client-side encryption, and on-chain access control. Sensitive files are sealed in the browser before upload, while public files remain directly readable through Shelby and S3-compatible tooling.
 
+![BlobSafe landing page](public/screenshots/landing.png)
+
 ## Why BlobSafe Exists
 
 Most team file tools require trust in a centralized provider. The provider can see file contents, change access policy, or remove access. BlobSafe is designed around a different model:
@@ -36,6 +38,24 @@ Implemented and tested:
 - audit log for storage, registry, grant, revoke, delete, and recovery events;
 - network switch between ShelbyNet and Shelby Testnet;
 - Shelby S3 Gateway validation tooling.
+
+## Product Screens
+
+| Vault overview | Seal files |
+| --- | --- |
+| ![BlobSafe vault overview](public/screenshots/overview.png) | ![BlobSafe seal files](public/screenshots/seal.png) |
+
+| Owned files | Shared access |
+| --- | --- |
+| ![BlobSafe owned files](public/screenshots/files.png) | ![BlobSafe shared access](public/screenshots/shared.png) |
+
+| Recipient groups | Vault settings |
+| --- | --- |
+| ![BlobSafe recipient groups](public/screenshots/groups.png) | ![BlobSafe vault settings](public/screenshots/settings.png) |
+
+| Audit activity |
+| --- |
+| ![BlobSafe audit activity](public/screenshots/activity.png) |
 
 ## Core Features
 
