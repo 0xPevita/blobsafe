@@ -1,8 +1,15 @@
 # BlobSafe
 
+[![Live Demo](https://img.shields.io/badge/live-blobsafe.vercel.app-9ED67A?style=for-the-badge)](https://blobsafe.vercel.app)
+[![ShelbyNet](https://img.shields.io/badge/network-ShelbyNet-141A15?style=for-the-badge)](https://explorer.shelby.xyz/shelbynet)
+[![Aptos Move](https://img.shields.io/badge/contract-Aptos%20Move-1D241F?style=for-the-badge)](move/sources/access_control.move)
+[![Vite React](https://img.shields.io/badge/app-Vite%20%2B%20React-20251F?style=for-the-badge)](package.json)
+[![License: MIT](https://img.shields.io/badge/license-MIT-9ED67A?style=for-the-badge)](LICENSE)
+
 BlobSafe is a wallet-owned storage dApp for private team files on Shelby Protocol.
 
 Live app: https://blobsafe.vercel.app
+
 Repository: https://github.com/0xPevita/blobsafe
 
 BlobSafe combines Shelby storage, Aptos wallet signatures, client-side encryption, and on-chain access control. Sensitive files are sealed in the browser before upload, while public files remain directly readable through Shelby and S3-compatible tooling.
@@ -38,6 +45,19 @@ Implemented and tested:
 - audit log for storage, registry, grant, revoke, delete, and recovery events;
 - network switch between ShelbyNet and Shelby Testnet;
 - Shelby S3 Gateway validation tooling.
+
+## Deployment
+
+| Surface | Value |
+| --- | --- |
+| Production app | https://blobsafe.vercel.app |
+| Primary network | ShelbyNet |
+| Contract module | `0x852058e9eff548bc28eb315812d3c92f0baff51f4673ce14e1e1cfd2be956300::access_control` |
+| Contract version | `module_version() == 6` |
+| Frontend deploy | Vercel |
+| Source branch | `main` |
+
+The same dApp can switch to Shelby Testnet when the corresponding API key and contract address are configured.
 
 ## Product Screens
 
