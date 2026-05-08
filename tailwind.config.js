@@ -1,16 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./index.html",
   ],
   theme: {
     extend: {
       fontFamily: {
-        mono: ["'JetBrains Mono'", "monospace"],
-        display: ["'Syne'", "sans-serif"],
-        body: ["'DM Sans'", "sans-serif"],
+        mono: ["'Geist Mono'", "monospace"],
+        display: ["'Satoshi'", "'Geist'", "system-ui", "sans-serif"],
+        body: ["'Satoshi'", "'Geist'", "system-ui", "sans-serif"],
       },
       colors: {
         obsidian: {
@@ -22,9 +22,9 @@ module.exports = {
           500: "#2e2e3a",
         },
         acid: {
-          DEFAULT: "#c6ff00",
-          dim: "#a3d400",
-          glow: "rgba(198,255,0,0.15)",
+          DEFAULT: "#9cce76",
+          dim: "#7faa5d",
+          glow: "rgba(156,206,118,0.14)",
         },
         frost: {
           DEFAULT: "#e8e8f0",

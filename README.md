@@ -1,172 +1,227 @@
 # BlobSafe
-Link Demo [https://blobsafe-8u5h.vercel.app/]
 
-Decentralized encrypted file storage built on Shelby Protocol and Aptos L1.
+Decentralized encrypted file storage built on Shelby Protocol and Aptos.
 
-Files are encrypted client-side using AES-256-GCM before they leave your browser. Access control is enforced on-chain via Aptos smart contracts. No server ever sees your plaintext data.
-
-Built as an early access dApp on Shelby testnet.
-
----
-
-## Live
-
-Landing page and dApp are served from the same Next.js project:
-
-| Route | Description |
-|-------|-------------|
-| `/` | Landing page |
-| `/app` | dApp (upload, view files) |
-
----
+BlobSafe is a browser dApp for wallet-owned file storage. Files are encrypted locally with Web Crypto before upload, then committed and stored on ShelbyNet through the Shelby React SDK.
 
 ## Features
 
-- Client-side AES-256-GCM encryption via Web Crypto API
-- Key derivation from Aptos wallet address using PBKDF2
-- File upload and storage via Shelby Protocol SDK
-- On-chain blob metadata and verifiable receipts via SHA-256
-- Erasure coding across 16 storage providers using Clay Codes
-- S3-compatible gateway support
-- Petra Wallet integration via Aptos Wallet Adapter
-- Virtual folder structure using blob naming conventions
+- Client-side AES-GCM encryption before files leave the browser.
+- ShelbyNet upload flow via `@shelby-protocol/react` and `@shelby-protocol/sdk/browser`.
+- Aptos wallet signing through `@aptos-labs/wallet-adapter-react`.
+- Account blob listing with `useAccountBlobs`.
+- Dedicated landing page at `/` and dApp workspace routes at `/app`, `/app/upload`, `/app/files`, `/app/shared`, `/app/teams`, and `/app/settings`.
+- Upload receipts with blob name, account, hash, size, expiry, explorer link, and copyable JSON.
+- On-chain access-control module for file registration, grant, revoke, delete marking, and access views.
+- Share Access flow that commits recipient grants on-chain and verifies active access before shared downloads.
+- On-chain team recipient groups with member roles, then bulk grants for every member.
+- Wallet-encrypted receipt backup and restore to recover decrypt metadata after browser storage is cleared.
+- Shelby S3 Gateway handoff with config template, AWS CLI validation script, rclone, and boto3 examples.
+- Tailwind CSS interface tuned for a focused storage workflow.
 
----
-
-## Tech Stack
+## Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 14 (App Router) |
-| Storage | @shelby-protocol/sdk, @shelby-protocol/react |
-| Blockchain | @aptos-labs/ts-sdk |
-| Wallet | @aptos-labs/wallet-adapter-react, Petra |
-| Encryption | Web Crypto API (AES-256-GCM + PBKDF2) |
-| State | TanStack Query v5 |
+| --- | --- |
+| App | Vite + React 18 |
+| Storage | Shelby Protocol SDK / React SDK |
+| Chain | Aptos TypeScript SDK |
+| Wallet | Aptos Wallet Adapter |
+| Encryption | Web Crypto API |
+| State/query | TanStack Query, Zustand |
 | Styling | Tailwind CSS |
-| API Keys | geomi.dev |
 
----
-
-## Project Structure
-
-```
-src/
-  app/
-    page.tsx          # Landing page
-    layout.tsx        # Root layout (no wallet providers)
-    globals.css       # Global styles, design tokens, cursor effects
-    providers.tsx     # Wallet adapter providers
-    app/
-      page.tsx        # dApp (upload + file list)
-      layout.tsx      # dApp layout (wraps with providers)
-  components/
-    WalletButton.tsx  # Connect, disconnect, copy address
-    FileUpload.tsx    # Drag and drop, encrypt toggle, upload
-    FileList.tsx      # Blob list grouped by type
-    StatsBar.tsx      # Trust badges (encryption, chain, protocol)
-  lib/
-    shelby.ts         # ShelbyClient setup, helpers
-    encryption.ts     # AES-256-GCM, PBKDF2 key derivation
-```
-
----
-
-## Getting Started
-
-### Requirements
-
-- Node.js 18+
-- Petra Wallet browser extension
-- API key from [geomi.dev](https://geomi.dev)
-- APT from Shelby faucet
-
-### Install
+## Setup
 
 ```bash
-git clone https://github.com/0xPevita/blobsafe.git
-cd blobsafe
-npm install --legacy-peer-deps
-```
-
-### Configure
-
-```bash
+npm install
 cp .env.example .env.local
 ```
 
-Edit `.env.local`:
+Set your ShelbyNet API key:
 
-```env
-NEXT_PUBLIC_APTOS_API_KEY=aptoslabs_your_key_here
+```bash
+VITE_SHELBYNET_API_KEY=aptoslabs_your_key_here
 ```
 
-Get your key from [geomi.dev](https://geomi.dev).
+For production on-chain access control, deploy the Move package in `move/`, initialize it, then set:
 
-### Run
+```bash
+VITE_BLOBSAFE_CONTRACT_ADDRESS=0x...
+```
+
+`401 Unauthorized` from `api.shelbynet.aptoslabs.com` means the dev server is running without this key or was not restarted after editing `.env.local`.
+
+Run locally:
 
 ```bash
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open `http://127.0.0.1:3000`.
 
-### Fund your wallet
+## Build
 
-Get testnet APT:
-```
-https://docs.shelby.xyz/apis/faucet/aptos
-```
-
-Get ShelbyUSD:
-```
-https://docs.shelby.xyz/apis/faucet/shelbyusd
+```bash
+npm run build
+npm run preview
 ```
 
----
+The production build is emitted to `dist/` and can be deployed as a static site.
 
-## Network Configuration
+Run browser smoke tests:
 
-This project connects to Shelby testnet (`Network.SHELBYNET`) for storage operations and Aptos testnet for the wallet adapter.
+```bash
+npm run test:e2e
+```
 
-| Config | Value |
-|--------|-------|
-| Shelby RPC | `https://api.shelbynet.shelby.xyz/shelby` |
-| Aptos API | `https://api.testnet.aptoslabs.com/v1` |
-| Explorer | `https://explorer.shelby.xyz/testnet` |
+## Project Structure
 
----
+```text
+src/
+  App.tsx                  Lightweight SPA routing
+  main.tsx                 Vite React entrypoint
+  providers.tsx            Query, Shelby, and wallet providers
+  globals.css              Tailwind and design tokens
+  pages/
+    LandingPage.tsx        Public product landing page
+    DappPage.tsx           Wallet, upload, and blob listing workspace
+  components/layout/
+    SiteHeader.tsx
+    SiteBackground.tsx
+  components/
+    WalletButton.tsx
+    FileUpload.tsx
+    FileList.tsx
+    SharedAccess.tsx
+    TeamAccess.tsx
+    StatsBar.tsx
+  lib/
+    accessControl.ts       BlobSafeAccess contract client
+    shelby.ts              ShelbyNet client and helpers
+    encryption.ts          AES-GCM helpers
+    receiptBackups.ts      Wallet-encrypted Shelby receipt backups
+    teams.ts               On-chain/local recipient team helpers
+    shareGrants.ts         Encrypted on-chain grant payload helpers
+  store/
+    useFileStore.ts
+move/
+  Move.toml
+  sources/
+    access_control.move    Aptos Move access-control module
+```
 
-## How Encryption Works
+## Shelby Integration
 
-1. User connects Petra Wallet
-2. A 256-bit key is derived from the wallet address using PBKDF2 with SHA-256 and 100,000 iterations
-3. Each file is encrypted using AES-256-GCM with a random 12-byte IV
-4. The IV is prepended to the encrypted data before upload
-5. The resulting blob is uploaded to Shelby with a SHA-256 hash committed on-chain
+BlobSafe targets ShelbyNet:
 
-Decryption reverses this process locally in the browser. The derived key never leaves the device.
+- `Network.SHELBYNET`
+- RPC: `https://api.shelbynet.shelby.xyz/shelby`
+- Explorer: `https://explorer.shelby.xyz/shelbynet`
 
----
+Uploads use `useUploadBlobs` with a wallet signer:
 
-## Related Projects
+```ts
+await uploadBlobs.mutateAsync({
+  signer: {
+    account: accountAddress,
+    signAndSubmitTransaction,
+  },
+  blobs: [{ blobName, blobData }],
+  expirationMicros,
+});
+```
 
-- [shelby-analytics-dashboard](https://github.com/0xPevita/shelby-analytics-dashboard) - CLI dashboard for Shelby storage metrics
-- [shelby-s3-sync](https://github.com/0xPevita/shelby-s3-sync) - S3 sync tool for Shelby
-- [aptos-account-scanner](https://github.com/0xPevita/aptos-account-scanner) - Aptos account scanner
+Receipt recovery backups are stored as encrypted Shelby blobs under `blobsafe/backups/`.
+They are encrypted with the same wallet-signature-derived local key used to unwrap per-file keys, and are hidden from the normal file list.
 
----
+BlobSafe also keeps its user files in stable blob namespaces such as `blobsafe/encrypted/<folder>/<file>`.
+External S3-compatible tools can use the Shelby S3 Gateway against those paths, while BlobSafe should remain the place where sensitive files are encrypted before they are uploaded.
+The Settings page includes copyable `shelby.config.yaml`, gateway startup, rclone, boto3, and AWS CLI snippets. By default this project points `VITE_SHELBY_S3_GATEWAY_URL` at `http://localhost:9000`, matching Shelby's local gateway quick start.
 
-## Links
+## Shelby S3 Gateway Validation
 
-- Shelby Protocol docs: https://docs.shelby.xyz
-- Aptos developer docs: https://aptos.dev
-- Petra Wallet: https://petra.app
-- geomi.dev API keys: https://geomi.dev
-- Shelby Explorer: https://explorer.shelby.xyz/testnet
+BlobSafe is gateway-ready through predictable Shelby blob paths:
 
----
+```text
+blobsafe/encrypted/<folder>/<file>
+blobsafe/public/<folder>/<file>
+blobsafe/backups/receipt-backup-...
+```
+
+Public/plain files downloaded through S3 open directly. Encrypted files downloaded through S3 remain sealed bytes and must be decrypted through BlobSafe with the owner wallet or an active access grant.
+
+To run a local Shelby S3 Gateway:
+
+```powershell
+Copy-Item tools/s3/shelby.config.example.yaml shelby.config.yaml
+# Edit shelby.config.yaml with your Shelby API key, account bucket, and S3 signing secret.
+npx @shelby-protocol/s3-gateway --config shelby.config.yaml
+```
+
+Validate the gateway with AWS CLI from a separate terminal:
+
+```powershell
+$env:SHELBY_S3_GATEWAY_URL="http://localhost:9000"
+$env:SHELBY_S3_BUCKET="0xyour_wallet_address"
+$env:SHELBY_S3_ACCESS_KEY_ID="AKIAIOSFODNN7EXAMPLE"
+$env:SHELBY_S3_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+npm run s3:validate
+```
+
+Optional object download check:
+
+```powershell
+$env:BLOBSAFE_S3_OBJECT_KEY="blobsafe/public/<folder>/<file>"
+npm run s3:validate
+```
+
+Optional write/read check through the gateway:
+
+```powershell
+$env:BLOBSAFE_S3_PUT_TEST="true"
+npm run s3:validate
+```
+
+S3 writes require the gateway config to use an `aptosPrivateKey` for the same account as `SHELBY_S3_BUCKET`, and that account must have enough Shelby storage funds. The gateway also requires an object expiration, so BlobSafe's validator sends `x-amz-meta-expiration-seconds: 2592000` for PUT checks.
+
+Pass criteria:
+
+- `aws s3 ls` lists the configured Shelby account bucket.
+- `aws s3 ls s3://<account>/blobsafe/ --recursive` lists BlobSafe objects.
+- Public objects can be copied and opened directly.
+- Encrypted objects can be copied but remain encrypted outside BlobSafe.
+- Optional PUT validation writes and reads back a small public test object when the gateway key belongs to a funded bucket owner.
+- `receipt-backup` and receipt sidecar objects may appear in raw S3 listings, but BlobSafe hides them from the dApp file list.
+
+Do not put S3 access keys, S3 secret keys, or Aptos private keys in `VITE_*` variables. Frontend env vars are public in the built app.
+
+## On-chain Access Control
+
+BlobSafe includes a deploy-ready Aptos Move module at `move/sources/access_control.move`.
+
+Contract responsibilities:
+
+- `register_file`: records owner, blob name, filename, SHA-256 hash, size, and expiry.
+- `grant_access`: owner grants a recipient wallet access and stores the encrypted file-key payload on-chain.
+- `revoke_access`: owner revokes a recipient wallet.
+- `mark_deleted`: owner marks a blob deleted in access metadata.
+- `has_access`, `get_file`, `get_grant`: view functions used by the dApp.
+
+Deploy with the Aptos CLI after installing it:
+
+```powershell
+$env:BLOBSAFE_ADDR="<publisher-address>"
+npm run move:compile
+npm run move:test
+npm run move:publish
+npm run move:init
+```
+
+Then put `<publisher-address>` in `.env.local` as `VITE_BLOBSAFE_CONTRACT_ADDRESS` and restart Vite.
+
+Until that address is configured, upload/download still works, but production grant/revoke is disabled because the dApp cannot honestly claim on-chain access control.
 
 ## License
 
-MIT
+MIT License. See [LICENSE](LICENSE).
