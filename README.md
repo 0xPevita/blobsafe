@@ -1,147 +1,63 @@
 # BlobSafe
 
-Decentralized encrypted file storage built on Shelby Protocol and Aptos.
+BlobSafe is a wallet-owned storage dApp for private team files on Shelby Protocol.
 
-BlobSafe is a browser dApp for wallet-owned file storage. Files are encrypted locally with Web Crypto before upload, then committed and stored on ShelbyNet through the Shelby React SDK.
+Live app: https://blobsafe.vercel.app
+Repository: https://github.com/0xPevita/blobsafe
 
-## Features
+BlobSafe combines Shelby storage, Aptos wallet signatures, client-side encryption, and on-chain access control. Sensitive files are sealed in the browser before upload, while public files remain directly readable through Shelby and S3-compatible tooling.
 
-- Client-side AES-GCM encryption before files leave the browser.
-- ShelbyNet upload flow via `@shelby-protocol/react` and `@shelby-protocol/sdk/browser`.
-- Aptos wallet signing through `@aptos-labs/wallet-adapter-react`.
-- Account blob listing with `useAccountBlobs`.
-- Dedicated landing page at `/` and dApp workspace routes at `/app`, `/app/upload`, `/app/files`, `/app/shared`, `/app/teams`, and `/app/settings`.
-- Upload receipts with blob name, account, hash, size, expiry, explorer link, and copyable JSON.
-- On-chain access-control module for file registration, grant, revoke, delete marking, and access views.
-- Share Access flow that commits recipient grants on-chain and verifies active access before shared downloads.
-- On-chain team recipient groups with member roles, then bulk grants for every member.
-- Wallet-encrypted receipt backup and restore to recover decrypt metadata after browser storage is cleared.
-- Shelby S3 Gateway handoff with config template, AWS CLI validation script, rclone, and boto3 examples.
-- Tailwind CSS interface tuned for a focused storage workflow.
+## Why BlobSafe Exists
 
-## Stack
+Most team file tools require trust in a centralized provider. The provider can see file contents, change access policy, or remove access. BlobSafe is designed around a different model:
 
-| Layer | Technology |
-| --- | --- |
-| App | Vite + React 18 |
-| Storage | Shelby Protocol SDK / React SDK |
-| Chain | Aptos TypeScript SDK |
-| Wallet | Aptos Wallet Adapter |
-| Encryption | Web Crypto API |
-| State/query | TanStack Query, Zustand |
-| Styling | Tailwind CSS |
+- the browser encrypts private files before they touch the network;
+- the wallet owner controls decrypt access;
+- access grants and revocations are committed on-chain;
+- Shelby stores the blobs and provides high-throughput reads;
+- recovery metadata can be saved as wallet-encrypted Shelby blobs for cross-device use.
 
-## Setup
+BlobSafe is not a generic cloud drive clone. It is a Web3-native vault for teams, DAOs, and developers who need verifiable ownership, cryptographic privacy for sealed files, and practical file workflows.
 
-```bash
-npm install
-cp .env.example .env.local
-```
+## Current Status
 
-Set your ShelbyNet API key:
+BlobSafe is running on ShelbyNet and Shelby Testnet configuration paths.
 
-```bash
-VITE_SHELBYNET_API_KEY=aptoslabs_your_key_here
-```
+Implemented and tested:
 
-For production on-chain access control, deploy the Move package in `move/`, initialize it, then set:
+- public file upload and preview;
+- encrypted file seal, preview, download, and SHA-256 verification;
+- wallet-scoped file and folder listing;
+- on-chain file registration;
+- on-chain access grant, timed grant, renewal, expiry, and revoke;
+- group grant delivery with per-recipient grant JSON and access code;
+- recipient import and shared-file download;
+- recovery point save and restore across browsers/devices;
+- audit log for storage, registry, grant, revoke, delete, and recovery events;
+- network switch between ShelbyNet and Shelby Testnet;
+- Shelby S3 Gateway validation tooling.
 
-```bash
-VITE_BLOBSAFE_CONTRACT_ADDRESS=0x...
-```
+## Core Features
 
-`401 Unauthorized` from `api.shelbynet.aptoslabs.com` means the dev server is running without this key or was not restarted after editing `.env.local`.
+### Client-side encryption
 
-Run locally:
+Encrypted files use browser Web Crypto AES-256-GCM. Each file gets a per-file key. The key is wrapped with a wallet-signature-derived key, so BlobSafe does not receive plaintext file keys.
 
-```bash
-npm run dev
-```
+### Public storage mode
 
-Open `http://127.0.0.1:3000`.
+Public uploads are intentionally plaintext. They are useful for media, public artifacts, or files that should be readable from another browser without restoring private receipt metadata.
 
-## Build
+### On-chain access control
 
-```bash
-npm run build
-npm run preview
-```
+The Move contract records file ownership metadata and recipient access grants. Owners can grant, renew, expire, or revoke access. Recipients must have an active grant before BlobSafe lets them decrypt a shared encrypted file.
 
-The production build is emitted to `dist/` and can be deployed as a static site.
+### Receipt recovery
 
-Run browser smoke tests:
+Encrypted files need local receipt metadata to preview and decrypt. BlobSafe can save a wallet-encrypted recovery point back to Shelby. A new browser can detect that recovery point and restore the receipts after the same wallet signs.
 
-```bash
-npm run test:e2e
-```
+### Virtual folders
 
-## Project Structure
-
-```text
-src/
-  App.tsx                  Lightweight SPA routing
-  main.tsx                 Vite React entrypoint
-  providers.tsx            Query, Shelby, and wallet providers
-  globals.css              Tailwind and design tokens
-  pages/
-    LandingPage.tsx        Public product landing page
-    DappPage.tsx           Wallet, upload, and blob listing workspace
-  components/layout/
-    SiteHeader.tsx
-    SiteBackground.tsx
-  components/
-    WalletButton.tsx
-    FileUpload.tsx
-    FileList.tsx
-    SharedAccess.tsx
-    TeamAccess.tsx
-    StatsBar.tsx
-  lib/
-    accessControl.ts       BlobSafeAccess contract client
-    shelby.ts              ShelbyNet client and helpers
-    encryption.ts          AES-GCM helpers
-    receiptBackups.ts      Wallet-encrypted Shelby receipt backups
-    teams.ts               On-chain/local recipient team helpers
-    shareGrants.ts         Encrypted on-chain grant payload helpers
-  store/
-    useFileStore.ts
-move/
-  Move.toml
-  sources/
-    access_control.move    Aptos Move access-control module
-```
-
-## Shelby Integration
-
-BlobSafe targets ShelbyNet:
-
-- `Network.SHELBYNET`
-- RPC: `https://api.shelbynet.shelby.xyz/shelby`
-- Explorer: `https://explorer.shelby.xyz/shelbynet`
-
-Uploads use `useUploadBlobs` with a wallet signer:
-
-```ts
-await uploadBlobs.mutateAsync({
-  signer: {
-    account: accountAddress,
-    signAndSubmitTransaction,
-  },
-  blobs: [{ blobName, blobData }],
-  expirationMicros,
-});
-```
-
-Receipt recovery backups are stored as encrypted Shelby blobs under `blobsafe/backups/`.
-They are encrypted with the same wallet-signature-derived local key used to unwrap per-file keys, and are hidden from the normal file list.
-
-BlobSafe also keeps its user files in stable blob namespaces such as `blobsafe/encrypted/<folder>/<file>`.
-External S3-compatible tools can use the Shelby S3 Gateway against those paths, while BlobSafe should remain the place where sensitive files are encrypted before they are uploaded.
-The Settings page includes copyable `shelby.config.yaml`, gateway startup, rclone, boto3, and AWS CLI snippets. By default this project points `VITE_SHELBY_S3_GATEWAY_URL` at `http://localhost:9000`, matching Shelby's local gateway quick start.
-
-## Shelby S3 Gateway Validation
-
-BlobSafe is gateway-ready through predictable Shelby blob paths:
+BlobSafe uses predictable Shelby blob names:
 
 ```text
 blobsafe/encrypted/<folder>/<file>
@@ -149,17 +65,139 @@ blobsafe/public/<folder>/<file>
 blobsafe/backups/receipt-backup-...
 ```
 
-Public/plain files downloaded through S3 open directly. Encrypted files downloaded through S3 remain sealed bytes and must be decrypted through BlobSafe with the owner wallet or an active access grant.
+This keeps folders portable across the dApp and S3-compatible clients.
 
-To run a local Shelby S3 Gateway:
+### S3-compatible handoff
+
+The repo includes a Shelby S3 Gateway config template and validator. Public files copied through S3 open directly. Encrypted files copied through S3 remain sealed bytes and must be decrypted through BlobSafe with the right wallet or active grant.
+
+## Stack
+
+| Layer | Technology |
+| --- | --- |
+| App | Vite, React 18, TypeScript |
+| Styling | Tailwind CSS |
+| Motion | Framer Motion |
+| Storage | Shelby Protocol SDK / React SDK |
+| Chain | Aptos TypeScript SDK |
+| Wallet | Aptos Wallet Adapter |
+| Encryption | Web Crypto API |
+| State | TanStack Query, Zustand |
+| Contract | Aptos Move |
+| Deploy | Vercel |
+
+## Environment
+
+Copy the example file:
+
+```bash
+cp .env.example .env.local
+```
+
+Required frontend variables:
+
+```env
+VITE_SHELBYNET_API_KEY=aptoslabs_your_key_here
+VITE_SHELBY_TESTNET_API_KEY=aptoslabs_your_key_here
+VITE_SHELBY_NETWORK=shelbynet
+VITE_BLOBSAFE_CONTRACT_ADDRESS=0xyour_contract_address
+VITE_BLOBSAFE_SHELBYNET_CONTRACT_ADDRESS=0xyour_shelbynet_contract_address
+VITE_BLOBSAFE_TESTNET_CONTRACT_ADDRESS=0xyour_testnet_contract_address
+```
+
+Optional:
+
+```env
+VITE_APTOS_API_KEY=aptoslabs_your_key_here
+VITE_SHELBY_S3_GATEWAY_URL=http://localhost:9000
+```
+
+Do not put Aptos private keys, S3 secret keys, or Shelby gateway signing secrets in `VITE_*` variables. Vite exposes those variables to the browser by design.
+
+## Run Locally
+
+```bash
+npm install
+npm run dev
+```
+
+Open:
+
+```text
+http://127.0.0.1:3000
+```
+
+Production build:
+
+```bash
+npm run build
+npm run preview
+```
+
+Smoke tests:
+
+```bash
+npm run test:e2e
+```
+
+Manual end-to-end coverage is documented in [TESTING.md](TESTING.md).
+
+## Move Contract
+
+The access-control contract lives in:
+
+```text
+move/sources/access_control.move
+```
+
+Main responsibilities:
+
+- register file metadata;
+- store file owner, blob name, file hash, size, expiry, and deleted state;
+- grant and revoke single-recipient access;
+- write timed grants and grant expiry state;
+- manage team recipient groups;
+- expose view functions used by the dApp.
+
+Compile and test:
+
+```powershell
+$env:BLOBSAFE_ADDR="<publisher-address>"
+npm run move:compile
+npm run move:test
+```
+
+Publish and initialize:
+
+```powershell
+$env:BLOBSAFE_ADDR="<publisher-address>"
+npm run move:publish
+npm run move:init
+aptos move run --function-id <publisher-address>::access_control::init_access_index
+aptos move run --function-id <publisher-address>::access_control::init_team_registry
+aptos move run --function-id <publisher-address>::access_control::init_grant_expiry_index
+aptos move run --function-id <publisher-address>::access_control::init_grant_expiry_ledger
+```
+
+Then set the publisher address in `.env.local` and restart the app.
+
+## Shelby S3 Gateway
+
+BlobSafe includes a local gateway template:
+
+```text
+tools/s3/shelby.config.example.yaml
+```
+
+Start a local Shelby S3 Gateway:
 
 ```powershell
 Copy-Item tools/s3/shelby.config.example.yaml shelby.config.yaml
-# Edit shelby.config.yaml with your Shelby API key, account bucket, and S3 signing secret.
-npx @shelby-protocol/s3-gateway --config shelby.config.yaml
+# Edit shelby.config.yaml with your Shelby API key, bucket owner account, and local S3 signing secret.
+npx @shelby-protocol/s3-gateway --config shelby.config.yaml --port 9000
 ```
 
-Validate the gateway with AWS CLI from a separate terminal:
+Validate list and read:
 
 ```powershell
 $env:SHELBY_S3_GATEWAY_URL="http://localhost:9000"
@@ -169,59 +207,78 @@ $env:SHELBY_S3_SECRET_ACCESS_KEY="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
 npm run s3:validate
 ```
 
-Optional object download check:
+Validate a specific object:
 
 ```powershell
 $env:BLOBSAFE_S3_OBJECT_KEY="blobsafe/public/<folder>/<file>"
 npm run s3:validate
 ```
 
-Optional write/read check through the gateway:
+Optional PUT validation:
 
 ```powershell
 $env:BLOBSAFE_S3_PUT_TEST="true"
 npm run s3:validate
 ```
 
-S3 writes require the gateway config to use an `aptosPrivateKey` for the same account as `SHELBY_S3_BUCKET`, and that account must have enough Shelby storage funds. The gateway also requires an object expiration, so BlobSafe's validator sends `x-amz-meta-expiration-seconds: 2592000` for PUT checks.
+PUT validation requires the gateway account to be the same account as the bucket owner and to have enough Shelby storage funds.
 
-Pass criteria:
+## Security Model
 
-- `aws s3 ls` lists the configured Shelby account bucket.
-- `aws s3 ls s3://<account>/blobsafe/ --recursive` lists BlobSafe objects.
-- Public objects can be copied and opened directly.
-- Encrypted objects can be copied but remain encrypted outside BlobSafe.
-- Optional PUT validation writes and reads back a small public test object when the gateway key belongs to a funded bucket owner.
-- `receipt-backup` and receipt sidecar objects may appear in raw S3 listings, but BlobSafe hides them from the dApp file list.
+BlobSafe separates storage from decryption authority.
 
-Do not put S3 access keys, S3 secret keys, or Aptos private keys in `VITE_*` variables. Frontend env vars are public in the built app.
+- Shelby stores blobs.
+- Aptos records ownership and access metadata.
+- The browser performs encryption and decryption.
+- The wallet signs messages used to derive local wrapping keys.
+- Grant payloads contain encrypted key material, not plaintext keys.
 
-## On-chain Access Control
+Important boundaries:
 
-BlobSafe includes a deploy-ready Aptos Move module at `move/sources/access_control.move`.
+- public files are not encrypted;
+- encrypted files require a receipt or recovery point to decrypt;
+- recovery points are encrypted and wallet-scoped;
+- S3 downloads of encrypted objects return sealed bytes;
+- `VITE_*` values are public browser config, not server secrets.
 
-Contract responsibilities:
+## Known Limitations
 
-- `register_file`: records owner, blob name, filename, SHA-256 hash, size, and expiry.
-- `grant_access`: owner grants a recipient wallet access and stores the encrypted file-key payload on-chain.
-- `revoke_access`: owner revokes a recipient wallet.
-- `mark_deleted`: owner marks a blob deleted in access metadata.
-- `has_access`, `get_file`, `get_grant`: view functions used by the dApp.
+- This is a browser-first dApp. Large-file UX should still be tested under real community load.
+- Aptos wallet adapter dependencies currently emit peer dependency warnings during install, but production builds complete successfully.
+- S3 Gateway validation is local-tooling based. BlobSafe does not embed S3 signing secrets in the browser.
+- Encrypted-file recovery depends on users saving or restoring wallet-encrypted receipt recovery points.
 
-Deploy with the Aptos CLI after installing it:
+## Project Structure
 
-```powershell
-$env:BLOBSAFE_ADDR="<publisher-address>"
-npm run move:compile
-npm run move:test
-npm run move:publish
-npm run move:init
+```text
+src/
+  pages/
+    LandingPage.tsx
+    DappPage.tsx
+    DappRoute.tsx
+  components/
+    FileUpload.tsx
+    FileList.tsx
+    SharedAccess.tsx
+    TeamAccess.tsx
+    ReceiptBackupPanel.tsx
+  lib/
+    accessControl.ts
+    encryption.ts
+    receiptBackups.ts
+    shareGrants.ts
+    shelby.ts
+    teams.ts
+  store/
+    useFileStore.ts
+move/
+  sources/access_control.move
+tools/
+  s3/
+    validate-s3.mjs
+    shelby.config.example.yaml
 ```
-
-Then put `<publisher-address>` in `.env.local` as `VITE_BLOBSAFE_CONTRACT_ADDRESS` and restart Vite.
-
-Until that address is configured, upload/download still works, but production grant/revoke is disabled because the dApp cannot honestly claim on-chain access control.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
