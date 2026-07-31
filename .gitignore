@@ -1,0 +1,51 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+/test-results
+
+# build output
+/dist
+/.next/
+/out/
+/build
+/move/build
+
+# misc
+.DS_Store
+*.pem
+tmp-*.png
+/tmp-page-audit
+/[{}]src
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+vite-dev*.log
+*.log
+
+# local env files
+.env*.local
+.env
+.aptos/
+shelby.config.yaml
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+.vercel
+# codex/internal project memory
+memory.md
+tasks.md
+soul.md
+source of truth.md
+.tmp/
+.tmp-*/

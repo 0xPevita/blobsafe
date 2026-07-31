@@ -1,0 +1,15 @@
+.aptos
+.env
+.env.local
+.env.*.local
+.next
+dist
+node_modules
+test-results
+tmp-page-audit
+move/build
+shelby.config.yaml
+tmp-*.png
+*.log
+tsconfig.tsbuildinfo
+[{}]src
