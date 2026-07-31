@@ -1,0 +1,27 @@
+# Copy to shelby.config.yaml and replace placeholders before starting the
+# Shelby S3 Gateway. Do not commit the filled file.
+network:
+  name: shelbynet
+  rpcEndpoint: https://api.shelbynet.shelby.xyz/shelby
+  aptosFullnode: https://api.shelbynet.shelby.xyz/v1
+  aptosIndexer: https://api.shelbynet.shelby.xyz/v1/graphql
+  apiKey: <YOUR_SHELBY_API_KEY>
+
+server:
+  host: localhost
+  port: 9000
+  region: shelbyland
+  verbose: false
+
+# These are S3 SigV4 signing credentials shared between the gateway and
+# your local S3 client. They are not AWS credentials.
+credentials:
+  - accessKeyId: AKIAIOSFODNN7EXAMPLE
+    secretAccessKey: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    # Add aptosPrivateKey only when you want writes/deletes through S3.
+    # It must belong to the bucket owner account and have enough Shelby funds.
+    # aptosPrivateKey: <YOUR_APTOS_PRIVATE_KEY>
+
+# Bucket names are Shelby account addresses and must be quoted.
+buckets:
+  - "<YOUR_SHELBY_ACCOUNT_ADDRESS>"
