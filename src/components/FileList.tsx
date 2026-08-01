@@ -105,7 +105,7 @@ type BlobActivityView = {
 };
 
 type ActivityState = {
-  status: "idle" | "loading" | "ready" | "error";
+  status: "idle" | "loading" | "ready" | "unavailable" | "error";
   items: BlobActivityView[];
   message?: string;
 };
@@ -212,10 +212,11 @@ export function FileList() {
       })
       .catch((error) => {
         if (cancelled) return;
+        const formattedError = formatBlobActivityError(error);
         setActivityState({
-          status: "error",
+          status: formattedError.isSchemaUnavailable ? "unavailable" : "error",
           items: [],
-        message: error instanceof Error ? error.message : "Chain activity is not available yet.",
+          message: formattedError.message,
         });
       });
 
@@ -1727,6 +1728,15 @@ function AuditTimeline({
 
       {activityState.status === "loading" && timeline.length === 0 && <AuditTimelineSkeleton />}
 
+      {activityState.status === "unavailable" && (
+        <div className="mb-3 rounded-xl border border-[var(--surface-border)] bg-[var(--surface-muted)] px-4 py-3 text-frost-dim">
+          <div className="flex items-start gap-2">
+            <Info size={14} className="mt-0.5 shrink-0 text-[var(--acid)]" />
+            <p className="text-sm leading-6">{activityState.message}</p>
+          </div>
+        </div>
+      )}
+
       {activityState.status === "error" && (
         <div className="mb-3 flex items-start justify-between gap-3 rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-danger">
           <div className="flex items-start gap-2">
@@ -1741,7 +1751,7 @@ function AuditTimeline({
 
       {timeline.length === 0 && activityState.status !== "loading" ? (
         <div className="rounded-xl border border-[var(--surface-border)] bg-[var(--surface-muted)] px-4 py-4 text-sm text-frost-muted">
-          No audit events are indexed for this file yet. Refresh after a new transaction settles.
+          No local audit events are recorded for this file yet. Shelby index activity will appear here when this network exposes blob activity data.
         </div>
       ) : (
         <div className="space-y-2">
@@ -2911,6 +2921,27 @@ function receiptToBlobMetadata(receipt: StoredReceipt) {
   };
 }
 
+function formatBlobActivityError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error || "");
+  const normalized = message.toLowerCase();
+  const isSchemaUnavailable =
+    normalized.includes("selectionset.blob_activities") ||
+    (normalized.includes("blob_activities") && normalized.includes("query_root")) ||
+    (normalized.includes("validation-failed") && normalized.includes("blob_activities"));
+
+  if (isSchemaUnavailable) {
+    return {
+      isSchemaUnavailable: true,
+      message:
+        "Shelby index activity is not exposed on this network yet. BlobSafe is showing local receipts and on-chain access events, and storage actions remain usable.",
+    };
+  }
+
+  return {
+    isSchemaUnavailable: false,
+    message: "Blob activity could not be refreshed right now. Local receipt and access events remain available.",
+  };
+}
 function formatVaultIndexError(error: unknown) {
   const message = error instanceof Error ? error.message : "";
   const normalized = message.toLowerCase();
@@ -3097,3 +3128,4 @@ function saveBytes(fileName: string, bytes: Uint8Array) {
   link.remove();
   URL.revokeObjectURL(objectUrl);
 }
+
