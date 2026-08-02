@@ -1,0 +1,85 @@
+name: BlobSafe CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run: npm run build
+
+  e2e:
+    name: Browser smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright smoke tests
+        run: npm run test:e2e
+
+  move:
+    name: Move compile and tests
+    runs-on: ubuntu-22.04
+    env:
+      BLOBSAFE_ADDR: 0x852058e9eff548bc28eb315812d3c92f0baff51f4673ce14e1e1cfd2be956300
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Aptos CLI
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --location \
+            https://github.com/aptos-labs/aptos-core/releases/download/aptos-cli-v9.5.0/aptos-cli-9.5.0-Ubuntu-22.04-x86_64.zip \
+            --output aptos-cli.zip
+          unzip -q aptos-cli.zip
+          chmod +x aptos
+          sudo install -m 0755 aptos /usr/local/bin/aptos
+          aptos --version
+
+      - name: Compile Move package
+        run: >-
+          aptos move compile
+          --package-dir move
+          --named-addresses blobsafe_addr=$BLOBSAFE_ADDR
+          --skip-fetch-latest-git-deps
+
+      - name: Run Move unit tests
+        run: >-
+          aptos move test
+          --package-dir move
+          --named-addresses blobsafe_addr=$BLOBSAFE_ADDR
+          --skip-fetch-latest-git-deps

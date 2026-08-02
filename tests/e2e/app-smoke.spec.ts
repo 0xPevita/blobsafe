@@ -69,5 +69,5 @@ test("overview does not show cached receipts while wallet is disconnected", asyn
   await page.goto("/app");
 
   await expect(page.getByText("legacy-wallet-file.png")).toHaveCount(0);
-  await expect(page.getByText("Connect a wallet to load vault activity for that account.")).toBeVisible();
+  await expect(page.getByText("Connect wallet to load activity")).toBeVisible();
 });

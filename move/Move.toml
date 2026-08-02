@@ -7,4 +7,4 @@ upgrade_policy = "compatible"
 blobsafe_addr = "_"
 
 [dependencies]
-AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "mainnet" }
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "ea05dac18f5cbf79a4b83bbbacb2690657f0198b" }
