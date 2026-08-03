@@ -54,7 +54,7 @@ jobs:
     name: Move compile and tests
     runs-on: ubuntu-22.04
     env:
-      BLOBSAFE_ADDR: 0x852058e9eff548bc28eb315812d3c92f0baff51f4673ce14e1e1cfd2be956300
+      BLOBSAFE_ADDR: "0x852058e9eff548bc28eb315812d3c92f0baff51f4673ce14e1e1cfd2be956300"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
