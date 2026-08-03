@@ -634,15 +634,21 @@ export async function waitForOnChainTransaction(txHash: string) {
 }
 
 function normalizeContractAddress(value: string): string {
-  const normalized = normalizeAddress(value).trim();
+  const trimmed = value.trim();
   if (
-    !normalized ||
-    normalized.includes("your_contract_address") ||
-    normalized.includes("0xyour")
+    !trimmed ||
+    trimmed.includes("your_contract_address") ||
+    trimmed.includes("0xyour")
   ) {
     return "";
   }
-  return normalized.startsWith("0x") ? normalized : `0x${normalized}`;
+
+  try {
+    const normalized = normalizeAddress(trimmed).trim();
+    return normalized.startsWith("0x") ? normalized : "0x" + normalized;
+  } catch {
+    return "";
+  }
 }
 
 function accessFunction(name: string): MoveFunctionId {
